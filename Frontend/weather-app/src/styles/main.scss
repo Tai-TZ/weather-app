@@ -1,0 +1,142 @@
+// Import variables & mixins
+@import 'variables';
+@import 'mixins';
+
+// Convert SCSS variables → CSS variables
+:root {
+    // Colors
+    --color-primary: #{$color-primary};
+    --color-primary-dark: #{$color-primary-dark};
+    --color-secondary: #{$color-secondary};
+    --color-secondary-dark: #{$color-secondary-dark};
+    --color-bg: #{$color-bg};
+    --color-white: #{$color-white};
+    --color-text: #{$color-text};
+    --color-text-light: #{$color-text-light};
+    --color-success: #{$color-success};
+    --color-warning: #{$color-warning};
+    --color-danger: #{$color-danger};
+
+    // Font
+    --font-primary: #{$font-primary};
+    --font-size-base: #{$font-size-base};
+    --font-weight-normal: #{$font-weight-normal};
+    --font-weight-bold: #{$font-weight-bold};
+
+    // Spacing
+    --spacing-xs: #{$spacing-xs};
+    --spacing-sm: #{$spacing-sm};
+    --spacing-md: #{$spacing-md};
+    --spacing-lg: #{$spacing-lg};
+    --spacing-xl: #{$spacing-xl};
+
+    // Border radius & shadow
+    --radius-sm: #{$radius-sm};
+    --radius-md: #{$radius-md};
+    --radius-lg: #{$radius-lg};
+    --shadow-sm: #{$shadow-sm};
+    --shadow-md: #{$shadow-md};
+    --shadow-lg: #{$shadow-lg};
+
+    // Breakpoints
+    --bp-sm: #{$bp-sm};
+    --bp-md: #{$bp-md};
+    --bp-lg: #{$bp-lg};
+    --bp-xl: #{$bp-xl};
+}
+
+
+
+
+
+// ==============================
+// CSS Reset
+// ==============================
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: $font-size-base;
+    font-family: $font-primary;
+    background-color: $color-bg;
+    color: $color-text;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+// ==============================
+// Body styles
+// ==============================
+body {
+    line-height: 1.5;
+    font-weight: $font-weight-normal;
+}
+
+// ==============================
+// Utility classes
+// ==============================
+.text-center {
+    text-align: center;
+}
+
+.mt-sm {
+    margin-top: $spacing-sm;
+}
+
+.mt-md {
+    margin-top: $spacing-md;
+}
+
+.mt-lg {
+    margin-top: $spacing-lg;
+}
+
+.p-sm {
+    padding: $spacing-sm;
+}
+
+.p-md {
+    padding: $spacing-md;
+}
+
+.p-lg {
+    padding: $spacing-lg;
+}
+
+.btn-primary {
+    background-color: $color-primary;
+    color: $color-white;
+    border-radius: $radius-sm;
+    padding: $spacing-sm $spacing-md;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: $color-primary-dark;
+    }
+}
+
+.btn-secondary {
+    background-color: $color-secondary;
+    color: $color-white;
+    border-radius: $radius-sm;
+    padding: $spacing-sm $spacing-md;
+    cursor: pointer;
+    border: none;
+
+    &:hover {
+        background-color: $color-secondary-dark;
+    }
+}

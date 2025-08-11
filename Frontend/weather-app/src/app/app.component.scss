@@ -1,0 +1,41 @@
+@import '../styles/mixins';
+
+
+.weather-card {
+    @include card; // Dùng mixin card
+    width: 250px;
+    text-align: center;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+    }
+
+    .weather-icon {
+        @include flex-center;
+        margin-bottom: var(--spacing-sm);
+
+        img {
+            width: 64px;
+            height: 64px;
+        }
+    }
+
+    .temp {
+        font-size: 2rem;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .condition {
+        color: var(--color-text-light);
+        font-size: 1rem;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .location {
+        font-size: 0.9rem;
+        color: var(--color-secondary);
+        font-weight: var(--font-weight-bold);
+    }
+}

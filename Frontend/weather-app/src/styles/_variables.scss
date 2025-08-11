@@ -1,0 +1,52 @@
+// ==============================
+// Color palette
+// ==============================
+$color-primary: #0072bb; // Màu xanh AccuWeather-like
+$color-primary-dark: #005a94;
+$color-secondary: #f7941d; // Accent orange
+$color-secondary-dark: #d97a0c;
+
+$color-bg: #f5f5f5;
+$color-white: #ffffff;
+$color-text: #333333;
+$color-text-light: #666666;
+
+$color-success: #28a745;
+$color-warning: #ffc107;
+$color-danger: #dc3545;
+
+// ==============================
+// Font
+// ==============================
+$font-primary: 'Roboto', sans-serif;
+$font-size-base: 16px;
+$font-weight-normal: 400;
+$font-weight-bold: 600;
+
+// ==============================
+// Spacing
+// ==============================
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// ==============================
+// Border radius & shadow
+// ==============================
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+
+// ==============================
+// Breakpoints
+// ==============================
+$bp-sm: 576px;
+$bp-md: 768px;
+$bp-lg: 992px;
+$bp-xl: 1200px;
