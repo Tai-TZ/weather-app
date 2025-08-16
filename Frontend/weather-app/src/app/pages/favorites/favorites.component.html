@@ -1,1 +1,203 @@
-<p>favorites works!</p>
+<div class="favorites-container">
+    <!-- Header Section -->
+    <div class="favorites-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <mat-icon class="title-icon">favorite</mat-icon>
+                    Địa điểm yêu thích
+                </h1>
+                <p class="page-subtitle">
+                    Theo dõi thời tiết tại {{ favoriteLocations().length }} địa điểm yêu thích của bạn
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <button mat-raised-button color="primary" (click)="addNewLocation()" class="add-location-btn">
+                    <mat-icon>add_location</mat-icon>
+                    Thêm địa điểm
+                </button>
+
+                <button mat-fab color="accent" (click)="refreshWeather()" [disabled]="isLoading()"
+                    matTooltip="Cập nhật thời tiết" class="refresh-btn">
+                    <mat-icon [class.spinning]="isLoading()">refresh</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Controls -->
+    <div class="search-controls">
+        <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+            <mat-label>Tìm kiếm địa điểm</mat-label>
+            <input matInput [formControl]="searchControl" placeholder="Nhập tên thành phố hoặc quốc gia">
+            <mat-icon matPrefix>search</mat-icon>
+            <button mat-icon-button matSuffix *ngIf="searchControl.value" (click)="searchControl.setValue('')">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <div class="view-controls">
+            <mat-button-toggle-group [value]="viewMode()" (change)="viewMode.set($event.value)" class="view-toggle">
+                <mat-button-toggle value="grid" matTooltip="Xem dạng lưới">
+                    <mat-icon>grid_view</mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle value="list" matTooltip="Xem dạng danh sách">
+                    <mat-icon>view_list</mat-icon>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Đang cập nhật thời tiết...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredLocations().length === 0 && !isLoading()">
+        <mat-icon class="empty-icon">location_off</mat-icon>
+        <h3>Không tìm thấy địa điểm nào</h3>
+        <p *ngIf="searchControl.value">
+            Không có địa điểm nào phù hợp với "{{ searchControl.value }}"
+        </p>
+        <p *ngIf="!searchControl.value">
+            Chưa có địa điểm yêu thích nào. Hãy thêm địa điểm đầu tiên!
+        </p>
+        <button mat-raised-button color="primary" (click)="addNewLocation()" *ngIf="!searchControl.value">
+            <mat-icon>add_location</mat-icon>
+            Thêm địa điểm yêu thích
+        </button>
+    </div>
+
+    <!-- Weather Cards - Grid View -->
+    <div class="weather-grid" *ngIf="viewMode() === 'grid' && filteredLocations().length > 0 && !isLoading()">
+        <mat-card class="weather-card" *ngFor="let location of filteredLocations(); trackBy: trackByLocationId">
+
+            <!-- Card Header -->
+            <mat-card-header class="card-header">
+                <mat-card-title class="location-name">{{ location.name }}</mat-card-title>
+                <mat-card-subtitle class="location-country">{{ location.country }}</mat-card-subtitle>
+                <button mat-icon-button class="remove-btn" (click)="removeFromFavorites(location.id)"
+                    matTooltip="Xóa khỏi yêu thích">
+                    <mat-icon>favorite</mat-icon>
+                </button>
+            </mat-card-header>
+
+            <!-- Main Weather Info -->
+            <mat-card-content class="card-content">
+                <div class="main-weather">
+                    <div class="temperature-section">
+                        <span class="temperature" [style.color]="getTemperatureColor(location.temperature)">
+                            {{ location.temperature | number:'1.0-0' }}°
+                        </span>
+                        <span class="feels-like">Cảm giác {{ location.feelsLike }}°</span>
+                    </div>
+
+                    <div class="weather-icon-section">
+                        <mat-icon class="weather-icon">{{ getWeatherIcon(location.icon) }}</mat-icon>
+                        <span class="weather-description">{{ location.description }}</span>
+                    </div>
+                </div>
+
+                <!-- Weather Details -->
+                <div class="weather-details">
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">opacity</mat-icon>
+                            <span class="detail-label">Độ ẩm</span>
+                            <span class="detail-value">{{ location.humidity }}%</span>
+                        </div>
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">air</mat-icon>
+                            <span class="detail-label">Gió</span>
+                            <span class="detail-value">{{ location.windSpeed }} km/h</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">compress</mat-icon>
+                            <span class="detail-label">Áp suất</span>
+                            <span class="detail-value">{{ location.pressure }} hPa</span>
+                        </div>
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">visibility</mat-icon>
+                            <span class="detail-label">Tầm nhìn</span>
+                            <span class="detail-value">{{ location.visibility }} km</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">wb_sunny</mat-icon>
+                            <span class="detail-label">UV Index</span>
+                            <span class="detail-value">{{ location.uvIndex }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">schedule</mat-icon>
+                            <span class="detail-label">Cập nhật</span>
+                            <span class="detail-value">{{ formatLastUpdated(location.lastUpdated) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+
+            <!-- Card Actions -->
+            <mat-card-actions class="card-actions">
+                <button mat-button color="primary" (click)="viewDetails(location)">
+                    <mat-icon>info</mat-icon>
+                    Chi tiết
+                </button>
+                <button mat-button (click)="removeFromFavorites(location.id)">
+                    <mat-icon>delete</mat-icon>
+                    Xóa
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <!-- Weather List - List View -->
+    <div class="weather-list" *ngIf="viewMode() === 'list' && filteredLocations().length > 0 && !isLoading()">
+        <mat-card class="list-item" *ngFor="let location of filteredLocations(); trackBy: trackByLocationId">
+            <div class="list-content">
+                <div class="location-info">
+                    <h3 class="location-name">{{ location.name }}</h3>
+                    <p class="location-country">{{ location.country }}</p>
+                </div>
+
+                <div class="weather-summary">
+                    <mat-icon class="weather-icon">{{ getWeatherIcon(location.icon) }}</mat-icon>
+                    <div class="temperature-info">
+                        <span class="temperature" [style.color]="getTemperatureColor(location.temperature)">
+                            {{ location.temperature | number:'1.0-0' }}°C
+                        </span>
+                        <span class="description">{{ location.description }}</span>
+                    </div>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="stat">
+                        <mat-icon>opacity</mat-icon>
+                        <span>{{ location.humidity }}%</span>
+                    </div>
+                    <div class="stat">
+                        <mat-icon>air</mat-icon>
+                        <span>{{ location.windSpeed }} km/h</span>
+                    </div>
+                </div>
+
+                <div class="list-actions">
+                    <button mat-icon-button (click)="viewDetails(location)" matTooltip="Xem chi tiết">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="removeFromFavorites(location.id)" matTooltip="Xóa khỏi yêu thích"
+                        class="remove-btn">
+                        <mat-icon>favorite</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>
