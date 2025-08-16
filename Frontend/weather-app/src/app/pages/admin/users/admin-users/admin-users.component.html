@@ -1,1 +1,719 @@
-<p>admin-users works!</p>
+<div class="admin-users-container">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <mat-icon class="title-icon">people</mat-icon>
+                    Quản lý người dùng
+                </h1>
+                <p class="page-subtitle">
+                    Quản lý tài khoản người dùng, phân quyền và thống kê hoạt động
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <button mat-raised-button color="primary" (click)="openAddDialog()" class="add-btn">
+                    <mat-icon>person_add</mat-icon>
+                    Thêm người dùng
+                </button>
+
+                <button mat-raised-button color="accent" (click)="exportData()" class="export-btn">
+                    <mat-icon>download</mat-icon>
+                    Xuất dữ liệu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <mat-card class="stat-card total-users">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">people</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().totalUsers | number }}</span>
+                            <span class="stat-label">Tổng người dùng</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card active-users">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">verified_user</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().activeUsers | number }}</span>
+                            <span class="stat-label">Đang hoạt động</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card new-today">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">today</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().newUsersToday }}</span>
+                            <span class="stat-label">Mới hôm nay</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card new-week">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">date_range</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().newUsersThisWeek }}</span>
+                            <span class="stat-label">Mới tuần này</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card online-users">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">wifi</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().onlineUsers }}</span>
+                            <span class="stat-label">Đang online</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card suspended-users">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon">block</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().suspendedUsers }}</span>
+                            <span class="stat-label">Bị tạm khóa</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <mat-tab-group [(selectedIndex)]="activeTab" (selectedTabChange)="onTabChange($event.index)" class="users-tabs">
+
+        <!-- User Management Tab -->
+        <mat-tab label="Quản lý người dùng">
+            <div class="tab-content">
+                <!-- Search and Filter Section -->
+                <mat-card class="search-card">
+                    <mat-card-content>
+                        <form [formGroup]="searchForm" class="search-form">
+                            <div class="search-controls">
+                                <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+                                    <mat-label>Tìm kiếm</mat-label>
+                                    <input matInput formControlName="searchTerm"
+                                        placeholder="Nhập tên, email, username, số điện thoại...">
+                                    <mat-icon matPrefix>search</mat-icon>
+                                    <button mat-icon-button matSuffix *ngIf="searchForm.get('searchTerm')?.value"
+                                        (click)="searchForm.get('searchTerm')?.setValue('')">
+                                        <mat-icon>clear</mat-icon>
+                                    </button>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+                                    <mat-label>Vai trò</mat-label>
+                                    <mat-select formControlName="filterRole">
+                                        <mat-option value="">Tất cả vai trò</mat-option>
+                                        <mat-option *ngFor="let role of roles()" [value]="role.name">
+                                            {{ role.displayName }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+                                    <mat-label>Trạng thái</mat-label>
+                                    <mat-select formControlName="filterStatus">
+                                        <mat-option value="">Tất cả trạng thái</mat-option>
+                                        <mat-option value="active">Hoạt động</mat-option>
+                                        <mat-option value="inactive">Không hoạt động</mat-option>
+                                        <mat-option value="suspended">Bị tạm khóa</mat-option>
+                                        <mat-option value="pending">Chờ duyệt</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Bulk Actions -->
+                <div class="bulk-actions" *ngIf="selection.selected.length > 0">
+                    <mat-card>
+                        <mat-card-content>
+                            <div class="bulk-actions-content">
+                                <span class="selection-count">
+                                    Đã chọn {{ selection.selected.length }} người dùng
+                                </span>
+
+                                <div class="bulk-buttons">
+                                    <button mat-stroked-button color="primary" (click)="bulkChangeStatus('active')">
+                                        <mat-icon>check_circle</mat-icon>
+                                        Kích hoạt
+                                    </button>
+
+                                    <button mat-stroked-button color="accent" (click)="bulkChangeStatus('inactive')">
+                                        <mat-icon>cancel</mat-icon>
+                                        Vô hiệu hóa
+                                    </button>
+
+                                    <button mat-stroked-button color="warn" (click)="bulkChangeStatus('suspended')">
+                                        <mat-icon>block</mat-icon>
+                                        Tạm khóa
+                                    </button>
+
+                                    <button mat-raised-button color="warn" (click)="bulkDelete()">
+                                        <mat-icon>delete</mat-icon>
+                                        Xóa đã chọn
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+
+                <!-- Users Table -->
+                <mat-card class="table-card">
+                    <mat-card-content>
+                        <div class="table-container">
+                            <table mat-table [dataSource]="dataSource" matSort class="users-table">
+
+                                <!-- Checkbox Column -->
+                                <ng-container matColumnDef="select">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-checkbox (change)="$event ? toggleSelectAll() : null"
+                                            [checked]="selection.hasValue() && isAllSelected()"
+                                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                            [aria-label]="'select all'">
+                                        </mat-checkbox>
+                                    </th>
+                                    <td mat-cell *matCellDef="let row">
+                                        <mat-checkbox (click)="$event.stopPropagation()"
+                                            (change)="$event ? selection.toggle(row) : null"
+                                            [checked]="selection.isSelected(row)" [aria-label]="'select'">
+                                        </mat-checkbox>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Avatar Column -->
+                                <ng-container matColumnDef="avatar">
+                                    <th mat-header-cell *matHeaderCellDef>Avatar</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="user-avatar">
+                                            <div class="avatar-circle"
+                                                [style.background-color]="getRoleColor(user.role)">
+                                                {{ getInitials(user.firstName, user.lastName) }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- User Info Column -->
+                                <ng-container matColumnDef="user">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Người dùng</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="user-info">
+                                            <div class="user-name">
+                                                <strong>{{ user.fullName }}</strong>
+                                                <mat-icon class="verified-icon" *ngIf="user.emailVerified"
+                                                    matTooltip="Email đã xác thực">
+                                                    verified
+                                                </mat-icon>
+                                            </div>
+                                            <div class="user-username">{{ '@' }}{{ user.username }}</div>
+                                            <div class="user-id">ID: {{ user.id }}</div>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Contact Column -->
+                                <ng-container matColumnDef="contact">
+                                    <th mat-header-cell *matHeaderCellDef>Liên hệ</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="contact-info">
+                                            <div class="email">
+                                                <mat-icon class="contact-icon">email</mat-icon>
+                                                <span>{{ user.email }}</span>
+                                            </div>
+                                            <div class="phone" *ngIf="user.phone">
+                                                <mat-icon class="contact-icon">phone</mat-icon>
+                                                <span>{{ user.phone }}</span>
+                                                <mat-icon class="verified-icon" *ngIf="user.phoneVerified"
+                                                    matTooltip="SĐT đã xác thực">
+                                                    verified
+                                                </mat-icon>
+                                            </div>
+                                            <div class="location" *ngIf="user.location">
+                                                <mat-icon class="contact-icon">location_on</mat-icon>
+                                                <span>{{ user.location }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Role Column -->
+                                <ng-container matColumnDef="role">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Vai trò</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <mat-chip [style.background-color]="getRoleColor(user.role)"
+                                            [style.color]="'white'" class="role-chip">
+                                            {{ getRoleDisplayName(user.role) }}
+                                        </mat-chip>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Status Column -->
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Trạng thái</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="status-info">
+                                            <mat-chip [class]="'status-' + user.status">
+                                                <mat-icon class="status-icon">{{ getStatusIcon(user.status)
+                                                    }}</mat-icon>
+                                                <span class="status-text">
+                                                    {{ user.status === 'active' ? 'Hoạt động' :
+                                                    user.status === 'inactive' ? 'Không hoạt động' :
+                                                    user.status === 'suspended' ? 'Bị tạm khóa' : 'Chờ duyệt' }}
+                                                </span>
+                                            </mat-chip>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Last Login Column -->
+                                <ng-container matColumnDef="lastLogin">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Đăng nhập cuối</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="login-info">
+                                            <span class="last-login">{{ formatLastLogin(user.lastLogin) }}</span>
+                                            <span class="last-active">{{ formatLastLogin(user.lastActiveAt) }}</span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Login Count Column -->
+                                <ng-container matColumnDef="loginCount">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Lần đăng nhập</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="login-count">
+                                            <span class="count-number">{{ user.loginCount | number }}</span>
+                                            <span class="count-label">lần</span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Created At Column -->
+                                <ng-container matColumnDef="createdAt">
+                                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Ngày tạo</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="date-info">
+                                            <span class="date">{{ formatDate(user.createdAt) }}</span>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Actions Column -->
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+                                    <td mat-cell *matCellDef="let user">
+                                        <div class="actions-cell">
+                                            <button mat-icon-button (click)="viewUserDetails(user)"
+                                                matTooltip="Xem chi tiết" color="primary">
+                                                <mat-icon>visibility</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button (click)="openEditDialog(user)"
+                                                matTooltip="Chỉnh sửa" color="accent">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button *ngIf="user.status === 'active'"
+                                                (click)="toggleUserStatus(user)" matTooltip="Vô hiệu hóa" color="warn">
+                                                <mat-icon>block</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button *ngIf="user.status === 'inactive'"
+                                                (click)="toggleUserStatus(user)" matTooltip="Kích hoạt" color="primary">
+                                                <mat-icon>check_circle</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button *ngIf="user.status === 'suspended'"
+                                                (click)="activateUser(user)" matTooltip="Bỏ tạm khóa" color="primary">
+                                                <mat-icon>check_circle</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button *ngIf="user.status !== 'suspended'"
+                                                (click)="suspendUser(user)" matTooltip="Tạm khóa" color="warn">
+                                                <mat-icon>gavel</mat-icon>
+                                            </button>
+
+                                            <button mat-icon-button (click)="deleteUser(user)" matTooltip="Xóa"
+                                                color="warn">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                            </table>
+
+                            <!-- No Data State -->
+                            <div class="no-data" *ngIf="dataSource.filteredData.length === 0">
+                                <mat-icon class="no-data-icon">people_outline</mat-icon>
+                                <h3>Không tìm thấy người dùng</h3>
+                                <p *ngIf="searchTerm()">
+                                    Không có người dùng nào phù hợp với "{{ searchTerm() }}"
+                                </p>
+                                <p *ngIf="!searchTerm()">
+                                    Chưa có người dùng nào. Hãy thêm người dùng đầu tiên!
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Paginator -->
+                        <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" [pageSize]="10" showFirstLastButtons
+                            aria-label="Select page">
+                        </mat-paginator>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+
+        <!-- Analytics Tab -->
+        <mat-tab label="Thống kê">
+            <div class="tab-content">
+                <div class="analytics-section">
+                    <!-- Role Distribution -->
+                    <mat-card class="analytics-card">
+                        <mat-card-header>
+                            <mat-card-title>Phân bố vai trò</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="role-distribution">
+                                <div class="role-item" *ngFor="let item of userStats().roleDistribution">
+                                    <div class="role-info">
+                                        <span class="role-name">{{ item.role }}</span>
+                                        <span class="role-count">{{ item.count }} người</span>
+                                    </div>
+                                    <div class="role-bar">
+                                        <div class="bar-fill" [style.width.%]="item.percentage"></div>
+                                    </div>
+                                    <span class="role-percentage">{{ item.percentage.toFixed(1) }}%</span>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <!-- Top Locations -->
+                    <mat-card class="analytics-card">
+                        <mat-card-header>
+                            <mat-card-title>Vị trí hàng đầu</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="locations-list">
+                                <div class="location-item"
+                                    *ngFor="let location of userStats().topLocations; let i = index">
+                                    <div class="location-rank">{{ i + 1 }}</div>
+                                    <div class="location-info">
+                                        <span class="location-name">{{ location.location }}</span>
+                                        <span class="location-count">{{ location.count }} người dùng</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <!-- Placeholder for future charts -->
+                    <div class="charts-placeholder">
+                        <mat-card>
+                            <mat-card-content>
+                                <div class="placeholder-content">
+                                    <mat-icon class="placeholder-icon">analytics</mat-icon>
+                                    <h4>Biểu đồ hoạt động người dùng</h4>
+                                    <p>Hiển thị xu hướng đăng ký và hoạt động theo thời gian</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card>
+                            <mat-card-content>
+                                <div class="placeholder-content">
+                                    <mat-icon class="placeholder-icon">bar_chart</mat-icon>
+                                    <h4>Thống kê thiết bị và trình duyệt</h4>
+                                    <p>Phân tích thiết bị và trình duyệt được sử dụng</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <!-- Add/Edit User Form Dialog -->
+    <div class="form-dialog" *ngIf="selectedUser() !== null || userForm.touched">
+        <mat-card class="form-card">
+            <mat-card-header>
+                <mat-card-title>
+                    {{ selectedUser() ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới' }}
+                </mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+                    <div class="form-grid">
+                        <!-- Personal Information Section -->
+                        <div class="form-section">
+                            <h3 class="section-title">Thông tin cá nhân</h3>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Họ</mat-label>
+                                    <input matInput formControlName="firstName" placeholder="Nguyễn">
+                                    <mat-error>{{ getFormError('firstName') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Tên</mat-label>
+                                    <input matInput formControlName="lastName" placeholder="Văn A">
+                                    <mat-error>{{ getFormError('lastName') }}</mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Tên đăng nhập</mat-label>
+                                <input matInput formControlName="username" placeholder="nguyenvana">
+                                <mat-error>{{ getFormError('username') }}</mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="form-section">
+                            <h3 class="section-title">Thông tin liên hệ</h3>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Email</mat-label>
+                                <input matInput type="email" formControlName="email"
+                                    placeholder="nguyenvana@example.com">
+                                <mat-error>{{ getFormError('email') }}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Số điện thoại</mat-label>
+                                <input matInput formControlName="phone" placeholder="+84901234567">
+                                <mat-error>{{ getFormError('phone') }}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Địa điểm</mat-label>
+                                <input matInput formControlName="location" placeholder="Hà Nội, Việt Nam">
+                                <mat-error>{{ getFormError('location') }}</mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Account Settings Section -->
+                        <div class="form-section full-width">
+                            <h3 class="section-title">Cài đặt tài khoản</h3>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Vai trò</mat-label>
+                                    <mat-select formControlName="role">
+                                        <mat-option *ngFor="let role of roles()" [value]="role.name">
+                                            <div class="role-option">
+                                                <span class="role-name">{{ role.displayName }}</span>
+                                                <span class="role-desc">{{ role.description }}</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>{{ getFormError('role') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Trạng thái</mat-label>
+                                    <mat-select formControlName="status">
+                                        <mat-option value="active">Hoạt động</mat-option>
+                                        <mat-option value="inactive">Không hoạt động</mat-option>
+                                        <mat-option value="suspended">Bị tạm khóa</mat-option>
+                                        <mat-option value="pending">Chờ duyệt</mat-option>
+                                    </mat-select>
+                                    <mat-error>{{ getFormError('status') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Múi giờ</mat-label>
+                                    <mat-select formControlName="timezone">
+                                        <mat-option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</mat-option>
+                                        <mat-option value="America/New_York">America/New_York</mat-option>
+                                        <mat-option value="Europe/London">Europe/London</mat-option>
+                                        <mat-option value="Asia/Tokyo">Asia/Tokyo</mat-option>
+                                    </mat-select>
+                                    <mat-error>{{ getFormError('timezone') }}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <!-- Preferences Section -->
+                        <div class="form-section full-width">
+                            <h3 class="section-title">Tùy chọn cá nhân</h3>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Ngôn ngữ</mat-label>
+                                    <mat-select formControlName="language">
+                                        <mat-option value="vi">Tiếng Việt</mat-option>
+                                        <mat-option value="en">English</mat-option>
+                                        <mat-option value="ja">日本語</mat-option>
+                                    </mat-select>
+                                    <mat-error>{{ getFormError('language') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Giao diện</mat-label>
+                                    <mat-select formControlName="theme">
+                                        <mat-option value="light">Sáng</mat-option>
+                                        <mat-option value="dark">Tối</mat-option>
+                                        <mat-option value="auto">Tự động</mat-option>
+                                    </mat-select>
+                                    <mat-error>{{ getFormError('theme') }}</mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="checkbox-field">
+                                <mat-checkbox formControlName="notifications">
+                                    Nhận thông báo qua email
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+                <button mat-button type="button" (click)="cancelEdit()">
+                    Hủy
+                </button>
+                <button mat-raised-button color="primary" (click)="saveUser()"
+                    [disabled]="userForm.invalid || isLoading()">
+                    <mat-icon *ngIf="isLoading()">refresh</mat-icon>
+                    <mat-icon *ngIf="!isLoading()">save</mat-icon>
+                    {{ isLoading() ? 'Đang lưu...' : 'Lưu' }}
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <!-- User Details Side Panel -->
+    <div class="user-details-panel" *ngIf="showUserDetails()" [@slideIn]>
+        <div class="panel-overlay" (click)="closeUserDetails()"></div>
+        <div class="panel-content">
+            <div class="panel-header">
+                <h2>Chi tiết người dùng</h2>
+                <button mat-icon-button (click)="closeUserDetails()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <div class="panel-body" *ngIf="selectedUser()">
+                <!-- User Avatar and Basic Info -->
+                <div class="user-profile">
+                    <div class="profile-avatar" [style.background-color]="getRoleColor(selectedUser()!.role)">
+                        {{ getInitials(selectedUser()!.firstName, selectedUser()!.lastName) }}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ selectedUser()!.fullName }}</h3>
+                        <p>{{ '@' }}{{ selectedUser()!.username }}</p>
+                        <div class="profile-badges">
+                            <mat-chip [style.background-color]="getRoleColor(selectedUser()!.role)"
+                                [style.color]="'white'">
+                                {{ getRoleDisplayName(selectedUser()!.role) }}
+                            </mat-chip>
+                            <mat-chip [class]="'status-' + selectedUser()!.status">
+                                {{ selectedUser()!.status === 'active' ? 'Hoạt động' :
+                                selectedUser()!.status === 'inactive' ? 'Không hoạt động' :
+                                selectedUser()!.status === 'suspended' ? 'Bị tạm khóa' : 'Chờ duyệt' }}
+                            </mat-chip>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="detail-section">
+                    <h4>Thông tin liên hệ</h4>
+                    <div class="detail-item">
+                        <mat-icon>email</mat-icon>
+                        <span>{{ selectedUser()!.email }}</span>
+                        <mat-icon class="verified" *ngIf="selectedUser()!.emailVerified">verified</mat-icon>
+                    </div>
+                    <div class="detail-item" *ngIf="selectedUser()!.phone">
+                        <mat-icon>phone</mat-icon>
+                        <span>{{ selectedUser()!.phone }}</span>
+                        <mat-icon class="verified" *ngIf="selectedUser()!.phoneVerified">verified</mat-icon>
+                    </div>
+                    <div class="detail-item" *ngIf="selectedUser()!.location">
+                        <mat-icon>location_on</mat-icon>
+                        <span>{{ selectedUser()!.location }}</span>
+                    </div>
+                </div>
+
+                <!-- Activity Information -->
+                <div class="detail-section">
+                    <h4>Hoạt động</h4>
+                    <div class="detail-item">
+                        <mat-icon>login</mat-icon>
+                        <span>Đăng nhập cuối: {{ formatLastLogin(selectedUser()!.lastLogin) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <mat-icon>timeline</mat-icon>
+                        <span>Hoạt động cuối: {{ formatLastLogin(selectedUser()!.lastActiveAt) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <mat-icon>bar_chart</mat-icon>
+                        <span>Số lần đăng nhập: {{ selectedUser()!.loginCount | number }}</span>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="detail-section">
+                    <h4>Thông tin tài khoản</h4>
+                    <div class="detail-item">
+                        <mat-icon>calendar_today</mat-icon>
+                        <span>Ngày tạo: {{ formatDate(selectedUser()!.createdAt) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <mat-icon>update</mat-icon>
+                        <span>Cập nhật cuối: {{ formatDate(selectedUser()!.updatedAt) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <mat-icon>language</mat-icon>
+                        <span>Ngôn ngữ: {{ selectedUser()!.preferences.language }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <mat-icon>palette</mat-icon>
+                        <span>Giao diện: {{ selectedUser()!.preferences.theme }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="isLoading()">
+        <mat-spinner diameter="50"></mat-spinner>
+    </div>
+</div>
