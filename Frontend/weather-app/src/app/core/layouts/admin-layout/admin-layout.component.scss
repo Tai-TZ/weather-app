@@ -1,0 +1,187 @@
+.sidenav-container {
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.admin-sidenav {
+    width: 280px;
+    background-color: #fff;
+    border-right: 1px solid #dee2e6;
+    box-shadow: 3px 0 6px rgba(0, 0, 0, 0.1);
+
+    .admin-header {
+        padding: 20px 16px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .logo-icon {
+                font-size: 32px;
+                width: 32px;
+                height: 32px;
+            }
+
+            .app-title {
+                margin: 0;
+                font-weight: 500;
+                font-size: 20px;
+            }
+        }
+    }
+
+    .back-section {
+        padding: 8px;
+
+        .back-button {
+            width: 100%;
+            justify-content: flex-start;
+            color: #6c757d;
+
+            .mat-icon {
+                margin-right: 8px;
+            }
+
+            &:hover {
+                background-color: #f8f9fa;
+                color: #495057;
+            }
+        }
+    }
+
+    .nav-list {
+        padding-top: 8px;
+
+        .mat-mdc-list-item {
+            height: 48px;
+            margin: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background-color: #fff5f5;
+            }
+
+            &.active-link {
+                background-color: #ffe6e6;
+                color: #dc3545;
+
+                .mat-icon {
+                    color: #dc3545;
+                }
+            }
+
+            .mat-icon {
+                color: #6c757d;
+                margin-right: 16px;
+            }
+        }
+    }
+
+    .sidenav-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+
+            .user-avatar {
+                font-size: 32px;
+                width: 32px;
+                height: 32px;
+                color: #dc3545;
+            }
+
+            .user-details {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .user-name {
+                    font-weight: 500;
+                    color: #333;
+                    font-size: 14px;
+                }
+
+                .user-role {
+                    font-size: 12px;
+                    color: #6c757d;
+                }
+            }
+        }
+    }
+}
+
+.admin-content {
+    padding: 20px;
+    min-height: calc(100vh - 64px);
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+
+    @media (max-width: 768px) {
+        padding: 16px;
+        min-height: calc(100vh - 56px);
+    }
+}
+
+// Admin Mobile toolbar styles
+.mat-toolbar.mat-accent {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .toolbar-title {
+        font-weight: 500;
+    }
+
+    .spacer {
+        flex: 1 1 auto;
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .admin-sidenav {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .admin-content {
+        padding-top: 0;
+    }
+}
+
+// Animation for smooth transitions
+.mat-sidenav-content {
+    transition: margin-left 0.3s ease;
+}
+
+// Custom scrollbar for admin sidebar
+.admin-sidenav {
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #dee2e6;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #adb5bd;
+    }
+}

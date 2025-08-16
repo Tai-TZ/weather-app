@@ -1,0 +1,85 @@
+<mat-sidenav-container class="sidenav-container">
+    <!-- Admin Sidebar -->
+    <mat-sidenav #drawer class="sidenav admin-sidenav" fixedInViewport
+        [attr.role]="isHandset() ? 'dialog' : 'navigation'" [mode]="isHandset() ? 'over' : 'side'"
+        [opened]="!isHandset()">
+
+        <!-- Admin Header -->
+        <div class="sidenav-header admin-header">
+            <div class="logo-container">
+                <mat-icon class="logo-icon">admin_panel_settings</mat-icon>
+                <h2 class="app-title">Admin Panel</h2>
+            </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Back to Main -->
+        <div class="back-section">
+            <button mat-button class="back-button" (click)="backToMain(); isHandset() && drawer.close()">
+                <mat-icon>arrow_back</mat-icon>
+                <span>Về trang chính</span>
+            </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Admin Navigation Menu -->
+        <mat-nav-list class="nav-list">
+            <ng-container *ngFor="let item of adminNavigationItems">
+                <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link"
+                    (click)="isHandset() && drawer.close()">
+                    <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                    <span matListItemTitle>{{ item.label }}</span>
+                </a>
+            </ng-container>
+        </mat-nav-list>
+
+        <!-- Admin User Section -->
+        <div class="sidenav-footer">
+            <mat-divider></mat-divider>
+            <div class="user-info">
+                <mat-icon class="user-avatar">account_circle</mat-icon>
+                <div class="user-details">
+                    <span class="user-name">{{ userName() }}</span>
+                    <span class="user-role">Quản trị viên</span>
+                </div>
+                <button mat-icon-button (click)="onLogout()" matTooltip="Đăng xuất">
+                    <mat-icon>logout</mat-icon>
+                </button>
+            </div>
+        </div>
+    </mat-sidenav>
+
+    <!-- Main Content -->
+    <mat-sidenav-content>
+        <!-- Admin Toolbar (Mobile) -->
+        <mat-toolbar color="accent" *ngIf="isHandset()">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+                <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+            </button>
+            <span class="toolbar-title">Admin Panel</span>
+
+            <!-- Mobile Admin Menu -->
+            <span class="spacer"></span>
+            <button mat-icon-button [matMenuTriggerFor]="adminMenu">
+                <mat-icon>account_circle</mat-icon>
+            </button>
+            <mat-menu #adminMenu="matMenu">
+                <button mat-menu-item (click)="backToMain()">
+                    <mat-icon>arrow_back</mat-icon>
+                    <span>Về trang chính</span>
+                </button>
+                <button mat-menu-item (click)="onLogout()">
+                    <mat-icon>logout</mat-icon>
+                    <span>Đăng xuất</span>
+                </button>
+            </mat-menu>
+        </mat-toolbar>
+
+        <!-- Admin Page Content -->
+        <main class="main-content admin-content">
+            <router-outlet></router-outlet>
+        </main>
+    </mat-sidenav-content>
+</mat-sidenav-container>

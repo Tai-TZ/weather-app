@@ -1,1 +1,68 @@
-<p>home works!</p>
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Chào mừng đến với Weather App</h1>
+            <p class="hero-subtitle">Ứng dụng thời tiết thông minh giúp bạn theo dõi thời tiết mọi lúc mọi nơi</p>
+            <div class="hero-actions">
+                <button mat-raised-button color="primary" class="cta-button">
+                    <mat-icon>search</mat-icon>
+                    Tìm kiếm thời tiết
+                </button>
+                <button mat-button class="secondary-button">
+                    <mat-icon>favorite</mat-icon>
+                    Xem yêu thích
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weather Cards Section -->
+    <section class="weather-cards">
+        <h2 class="section-title">Thời tiết các thành phố phổ biến</h2>
+        <div class="cards-grid">
+            <mat-card class="weather-card" *ngFor="let city of popularCities">
+                <mat-card-header>
+                    <mat-card-title>{{ city.name }}</mat-card-title>
+                    <mat-card-subtitle>{{ city.country }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="weather-info">
+                        <div class="temperature">{{ city.temperature }}°C</div>
+                        <div class="weather-icon">
+                            <mat-icon>{{ city.icon }}</mat-icon>
+                        </div>
+                    </div>
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">opacity</mat-icon>
+                            <span>{{ city.humidity }}% độ ẩm</span>
+                        </div>
+                        <div class="detail-item">
+                            <mat-icon class="detail-icon">air</mat-icon>
+                            <span>{{ city.windSpeed }} km/h</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button color="primary">Xem chi tiết</button>
+                    <button mat-icon-button>
+                        <mat-icon>favorite_border</mat-icon>
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">Tính năng nổi bật</h2>
+        <div class="features-grid">
+            <div class="feature-item" *ngFor="let feature of features">
+                <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+            </div>
+        </div>
+    </section>
+</div>

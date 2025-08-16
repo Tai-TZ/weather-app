@@ -1,0 +1,99 @@
+<mat-sidenav-container class="sidenav-container">
+    <!-- Desktop Sidebar -->
+    <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="isHandset() ? 'dialog' : 'navigation'"
+        [mode]="isHandset() ? 'over' : 'side'" [opened]="!isHandset()">
+
+        <!-- Logo Section -->
+        <div class="sidenav-header">
+            <div class="logo-container">
+                <mat-icon class="logo-icon">cloud</mat-icon>
+                <h2 class="app-title">Weather App</h2>
+            </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Navigation Menu -->
+        <mat-nav-list class="nav-list">
+            <ng-container *ngFor="let item of filteredNavigationItems">
+                <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link"
+                    (click)="isHandset() && drawer.close()">
+                    <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                    <span matListItemTitle>{{ item.label }}</span>
+                </a>
+            </ng-container>
+
+            <!-- Admin Panel (chỉ hiện cho admin) -->
+            <ng-container *ngIf="isLoggedIn()">
+                <mat-divider></mat-divider>
+                <a mat-list-item (click)="onAdminPanel(); isHandset() && drawer.close()">
+                    <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+                    <span matListItemTitle>Quản trị</span>
+                </a>
+            </ng-container>
+        </mat-nav-list>
+
+        <!-- User Section (Bottom of sidebar) -->
+        <div class="sidenav-footer" *ngIf="isLoggedIn()">
+            <mat-divider></mat-divider>
+            <div class="user-info">
+                <mat-icon class="user-avatar">account_circle</mat-icon>
+                <span class="user-name">{{ userName() }}</span>
+                <button mat-icon-button (click)="onLogout()" matTooltip="Đăng xuất">
+                    <mat-icon>logout</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <!-- Login Section (when not logged in) -->
+        <div class="sidenav-footer" *ngIf="!isLoggedIn()">
+            <mat-divider></mat-divider>
+            <div class="auth-buttons">
+                <button mat-raised-button color="primary" (click)="onLogin(); isHandset() && drawer.close()"
+                    class="auth-btn">
+                    Đăng nhập
+                </button>
+                <button mat-button (click)="onRegister(); isHandset() && drawer.close()" class="auth-btn">
+                    Đăng ký
+                </button>
+            </div>
+        </div>
+    </mat-sidenav>
+
+    <!-- Main Content -->
+    <mat-sidenav-content>
+        <!-- Top Toolbar (Mobile) -->
+        <mat-toolbar color="primary" *ngIf="isHandset()">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+                <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+            </button>
+            <span class="toolbar-title">Weather App</span>
+
+            <!-- Mobile User Menu -->
+            <span class="spacer"></span>
+            <ng-container *ngIf="isLoggedIn()">
+                <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                    <mat-icon>account_circle</mat-icon>
+                </button>
+                <mat-menu #userMenu="matMenu">
+                    <button mat-menu-item (click)="navigateTo('/profile')">
+                        <mat-icon>person</mat-icon>
+                        <span>Hồ sơ</span>
+                    </button>
+                    <button mat-menu-item (click)="onLogout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Đăng xuất</span>
+                    </button>
+                </mat-menu>
+            </ng-container>
+            <ng-container *ngIf="!isLoggedIn()">
+                <button mat-button (click)="onLogin()">Đăng nhập</button>
+            </ng-container>
+        </mat-toolbar>
+
+        <!-- Page Content -->
+        <main class="main-content">
+            <router-outlet></router-outlet>
+        </main>
+    </mat-sidenav-content>
+</mat-sidenav-container>
