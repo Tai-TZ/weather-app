@@ -1,0 +1,536 @@
+.admin-cities-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+// Page Header
+.page-header {
+    margin-bottom: 24px;
+    padding: 24px 0;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    margin: -20px -16px 24px -16px;
+    border-radius: 0 0 20px 20px;
+    color: white;
+
+    .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .title-section {
+        flex: 1;
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+            .title-icon {
+                font-size: 1.8rem;
+                width: 1.8rem;
+                height: 1.8rem;
+            }
+        }
+
+        .page-subtitle {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        .add-btn,
+        .export-btn {
+            .mat-icon {
+                margin-right: 8px;
+            }
+        }
+    }
+}
+
+// Search Card
+.search-card {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .search-form {
+        .search-controls {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+
+            .search-field {
+                flex: 1;
+                min-width: 300px;
+            }
+
+            .filter-field {
+                min-width: 200px;
+            }
+        }
+    }
+}
+
+// Bulk Actions
+.bulk-actions {
+    margin-bottom: 20px;
+
+    .bulk-actions-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+
+        .selection-count {
+            font-weight: 500;
+            color: #1976d2;
+        }
+
+        .bulk-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+
+            button {
+                .mat-icon {
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+}
+
+// Table Card
+.table-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+
+    .table-container {
+        overflow-x: auto;
+
+        .cities-table {
+            width: 100%;
+
+            .mat-mdc-header-cell {
+                font-weight: 600;
+                color: #333;
+                background-color: #f8f9fa;
+            }
+
+            .mat-mdc-cell {
+                padding: 16px 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .mat-mdc-row:hover {
+                background-color: #f8f9fa;
+            }
+
+            // City name column
+            .city-name {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                strong {
+                    color: #333;
+                }
+
+                .weather-station {
+                    font-size: 0.8rem;
+                    color: #666;
+                    background-color: #e3f2fd;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    width: fit-content;
+                }
+            }
+
+            // Coordinates column
+            .coordinates {
+                font-family: 'Courier New', monospace;
+                font-size: 0.9rem;
+                color: #666;
+            }
+
+            // Timezone column
+            .timezone {
+                background-color: #f5f5f5;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                color: #333;
+            }
+
+            // Status chips
+            .mat-mdc-chip {
+                font-size: 0.8rem;
+                min-height: 24px;
+
+                &.active-chip {
+                    background-color: #e8f5e8;
+                    color: #2e7d32;
+                }
+
+                &.inactive-chip {
+                    background-color: #ffebee;
+                    color: #c62828;
+                }
+            }
+
+            // Actions column
+            .actions-cell {
+                display: flex;
+                gap: 4px;
+
+                .mat-mdc-icon-button {
+                    width: 36px;
+                    height: 36px;
+
+                    .mat-icon {
+                        font-size: 18px;
+                        width: 18px;
+                        height: 18px;
+                    }
+                }
+            }
+        }
+    }
+
+    // No data state
+    .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+
+        .no-data-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            color: #ccc;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+    }
+}
+
+// Form Dialog
+.form-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+
+    .form-card {
+        width: 100%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+        .mat-mdc-card-header {
+            background-color: #f8f9fa;
+            margin: -24px -24px 24px -24px;
+            padding: 20px 24px;
+
+            .mat-mdc-card-title {
+                font-size: 1.3rem;
+                font-weight: 500;
+                color: #333;
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+
+            .form-section {
+                &.full-width {
+                    grid-column: 1 / -1;
+                }
+
+                .section-title {
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    color: #333;
+                    margin: 0 0 16px 0;
+                    padding-bottom: 8px;
+                    border-bottom: 2px solid #f0f0f0;
+                }
+
+                .form-row {
+                    display: flex;
+                    gap: 16px;
+                    margin-bottom: 16px;
+
+                    .form-field {
+                        flex: 1;
+                    }
+                }
+
+                .form-field {
+                    width: 100%;
+                    margin-bottom: 16px;
+
+                    &.full-width {
+                        grid-column: 1 / -1;
+                    }
+                }
+            }
+
+            // Status toggle
+            .status-toggle {
+                width: 100%;
+                padding: 16px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+
+                .toggle-content {
+                    margin-left: 16px;
+
+                    .toggle-title {
+                        display: block;
+                        font-weight: 500;
+                        color: #333;
+                        margin-bottom: 4px;
+                    }
+
+                    .toggle-desc {
+                        display: block;
+                        font-size: 0.9rem;
+                        color: #666;
+                    }
+                }
+            }
+        }
+
+        .mat-mdc-card-actions {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+
+            button {
+                .mat-icon {
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+}
+
+// Loading Overlay
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .admin-cities-container {
+        padding: 0 8px;
+    }
+
+    .page-header {
+        margin: -20px -8px 20px -8px;
+
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 0 16px;
+
+            .header-actions {
+                justify-content: center;
+            }
+        }
+    }
+
+    .search-card .search-form .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-field,
+        .filter-field {
+            min-width: unset;
+        }
+    }
+
+    .bulk-actions .bulk-actions-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+
+        .bulk-buttons {
+            justify-content: center;
+        }
+    }
+
+    .table-card {
+        .table-container {
+            font-size: 0.9rem;
+
+            .cities-table {
+
+                .mat-mdc-cell,
+                .mat-mdc-header-cell {
+                    padding: 12px 4px;
+                }
+
+                .city-name .weather-station {
+                    font-size: 0.7rem;
+                }
+
+                .actions-cell {
+                    flex-direction: column;
+                    gap: 2px;
+
+                    .mat-mdc-icon-button {
+                        width: 32px;
+                        height: 32px;
+                    }
+                }
+            }
+        }
+    }
+
+    .form-dialog {
+        padding: 10px;
+
+        .form-card {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+
+                .form-section .form-row {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header .header-content .title-section .page-title {
+        font-size: 1.5rem;
+
+        .title-icon {
+            font-size: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+    .bulk-actions .bulk-actions-content .bulk-buttons {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
+}
+
+// Loading animation for buttons
+.mat-mdc-raised-button[disabled] {
+    .mat-icon {
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Table animations
+.mat-mdc-row {
+    transition: background-color 0.2s ease;
+}
+
+.mat-mdc-chip {
+    transition: all 0.2s ease;
+}
+
+// Form animations
+.form-dialog {
+    animation: fadeIn 0.3s ease;
+}
+
+.form-card {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
