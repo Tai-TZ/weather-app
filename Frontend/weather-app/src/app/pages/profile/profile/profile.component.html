@@ -1,1 +1,371 @@
-<p>profile works!</p>
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="header-content">
+            <div class="avatar-section">
+                <div class="avatar-container">
+                    <div class="avatar" [class.has-image]="userProfile().avatar">
+                        <img *ngIf="userProfile().avatar" [src]="userProfile().avatar" [alt]="getFullName()">
+                        <span *ngIf="!userProfile().avatar" class="avatar-text">
+                            {{ getAvatarText() }}
+                        </span>
+                    </div>
+                    <button mat-mini-fab color="primary" class="avatar-edit-btn" (click)="uploadAvatar()"
+                        matTooltip="Thay đổi ảnh đại diện">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <h1 class="profile-name">{{ getFullName() }}</h1>
+                <p class="profile-email">{{ userProfile().email }}</p>
+                <p class="profile-location">
+                    <mat-icon>location_on</mat-icon>
+                    {{ userProfile().location.city }}, {{ userProfile().location.country }}
+                </p>
+                <p class="profile-bio" *ngIf="userProfile().bio">{{ userProfile().bio }}</p>
+            </div>
+
+            <div class="profile-actions">
+                <button mat-raised-button color="primary" (click)="toggleEdit()" [disabled]="isLoading()">
+                    <mat-icon>{{ isEditing() ? 'cancel' : 'edit' }}</mat-icon>
+                    {{ isEditing() ? 'Hủy' : 'Chỉnh sửa' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon searches">search</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().totalSearches | number }}</span>
+                            <span class="stat-label">Lượt tìm kiếm</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon favorites">favorite</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ userStats().favoritesCount }}</span>
+                            <span class="stat-label">Địa điểm yêu thích</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon active">schedule</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ getDaysActiveText() }}</span>
+                            <span class="stat-label">Thời gian hoạt động</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="stat-card">
+                <mat-card-content>
+                    <div class="stat-content">
+                        <mat-icon class="stat-icon last-check">access_time</mat-icon>
+                        <div class="stat-info">
+                            <span class="stat-number">{{ formatDateTime(userStats().lastWeatherCheck) }}</span>
+                            <span class="stat-label">Kiểm tra cuối</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <mat-tab-group [(selectedIndex)]="activeTab" (selectedTabChange)="onTabChange($event.index)" class="profile-tabs">
+
+        <!-- Personal Information Tab -->
+        <mat-tab label="Thông tin cá nhân">
+            <div class="tab-content">
+                <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+                    <div class="form-grid">
+                        <!-- Basic Info -->
+                        <div class="form-section">
+                            <h3 class="section-title">Thông tin cơ bản</h3>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Họ</mat-label>
+                                    <input matInput formControlName="firstName" [readonly]="!isEditing()"
+                                        placeholder="Nhập họ">
+                                    <mat-error>{{ getFormError('profile', 'firstName') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Tên</mat-label>
+                                    <input matInput formControlName="lastName" [readonly]="!isEditing()"
+                                        placeholder="Nhập tên">
+                                    <mat-error>{{ getFormError('profile', 'lastName') }}</mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Email</mat-label>
+                                <input matInput type="email" formControlName="email" [readonly]="!isEditing()"
+                                    placeholder="Nhập email">
+                                <mat-icon matPrefix>email</mat-icon>
+                                <mat-error>{{ getFormError('profile', 'email') }}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Số điện thoại</mat-label>
+                                <input matInput type="tel" formControlName="phone" [readonly]="!isEditing()"
+                                    placeholder="Nhập số điện thoại">
+                                <mat-icon matPrefix>phone</mat-icon>
+                                <mat-error>{{ getFormError('profile', 'phone') }}</mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Location Info -->
+                        <div class="form-section">
+                            <h3 class="section-title">Vị trí</h3>
+
+                            <div class="form-row">
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Thành phố</mat-label>
+                                    <input matInput formControlName="city" [readonly]="!isEditing()"
+                                        placeholder="Nhập thành phố">
+                                    <mat-error>{{ getFormError('profile', 'city') }}</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="form-field">
+                                    <mat-label>Quốc gia</mat-label>
+                                    <input matInput formControlName="country" [readonly]="!isEditing()"
+                                        placeholder="Nhập quốc gia">
+                                    <mat-error>{{ getFormError('profile', 'country') }}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <!-- Bio Section -->
+                        <div class="form-section full-width">
+                            <h3 class="section-title">Giới thiệu</h3>
+
+                            <mat-form-field appearance="outline" class="form-field full-width">
+                                <mat-label>Mô tả về bản thân</mat-label>
+                                <textarea matInput formControlName="bio" [readonly]="!isEditing()" rows="4"
+                                    placeholder="Viết vài dòng về bản thân..."></textarea>
+                                <mat-hint>Tối đa 500 ký tự</mat-hint>
+                                <mat-error>{{ getFormError('profile', 'bio') }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="form-actions" *ngIf="isEditing()">
+                        <button mat-raised-button color="primary" type="submit"
+                            [disabled]="profileForm.invalid || isLoading()">
+                            <mat-icon *ngIf="isLoading()">refresh</mat-icon>
+                            <mat-icon *ngIf="!isLoading()">save</mat-icon>
+                            {{ isLoading() ? 'Đang lưu...' : 'Lưu thay đổi' }}
+                        </button>
+                        <button mat-button type="button" (click)="toggleEdit()">
+                            Hủy
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Account Info -->
+                <div class="account-info">
+                    <h3 class="section-title">Thông tin tài khoản</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Ngày tham gia:</span>
+                            <span class="info-value">{{ formatDate(userProfile().joinDate) }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Đăng nhập cuối:</span>
+                            <span class="info-value">{{ formatDateTime(userProfile().lastLoginDate) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+
+        <!-- Weather Preferences Tab -->
+        <mat-tab label="Cài đặt thời tiết">
+            <div class="tab-content">
+                <form [formGroup]="preferencesForm" (ngSubmit)="savePreferences()">
+                    <div class="preferences-grid">
+                        <!-- Units Section -->
+                        <div class="pref-section">
+                            <h3 class="section-title">Đơn vị đo lường</h3>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Nhiệt độ</mat-label>
+                                <mat-select formControlName="temperatureUnit">
+                                    <mat-option value="celsius">Độ C (°C)</mat-option>
+                                    <mat-option value="fahrenheit">Độ F (°F)</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Tốc độ gió</mat-label>
+                                <mat-select formControlName="windSpeedUnit">
+                                    <mat-option value="kmh">km/h</mat-option>
+                                    <mat-option value="mph">mph</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Áp suất</mat-label>
+                                <mat-select formControlName="pressureUnit">
+                                    <mat-option value="hpa">hPa</mat-option>
+                                    <mat-option value="inHg">inHg</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Display Settings -->
+                        <div class="pref-section">
+                            <h3 class="section-title">Hiển thị</h3>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Định dạng thời gian</mat-label>
+                                <mat-select formControlName="timeFormat">
+                                    <mat-option value="24h">24 giờ</mat-option>
+                                    <mat-option value="12h">12 giờ (AM/PM)</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Ngôn ngữ</mat-label>
+                                <mat-select formControlName="language">
+                                    <mat-option value="vi">Tiếng Việt</mat-option>
+                                    <mat-option value="en">English</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="pref-field">
+                                <mat-label>Giao diện</mat-label>
+                                <mat-select formControlName="theme">
+                                    <mat-option value="light">Sáng</mat-option>
+                                    <mat-option value="dark">Tối</mat-option>
+                                    <mat-option value="auto">Tự động</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Section -->
+                    <div class="pref-section full-width">
+                        <h3 class="section-title">Thông báo</h3>
+
+                        <div class="toggle-list">
+                            <mat-slide-toggle formControlName="weatherAlerts" class="toggle-item">
+                                <div class="toggle-content">
+                                    <span class="toggle-title">Cảnh báo thời tiết</span>
+                                    <span class="toggle-desc">Nhận thông báo về thời tiết nguy hiểm</span>
+                                </div>
+                            </mat-slide-toggle>
+
+                            <mat-slide-toggle formControlName="dailyForecast" class="toggle-item">
+                                <div class="toggle-content">
+                                    <span class="toggle-title">Dự báo hàng ngày</span>
+                                    <span class="toggle-desc">Thông báo dự báo thời tiết mỗi sáng</span>
+                                </div>
+                            </mat-slide-toggle>
+
+                            <mat-slide-toggle formControlName="severeLearning" class="toggle-item">
+                                <div class="toggle-content">
+                                    <span class="toggle-title">Cảnh báo nghiêm trọng</span>
+                                    <span class="toggle-desc">Thông báo về các hiện tượng thời tiết cực đoan</span>
+                                </div>
+                            </mat-slide-toggle>
+
+                            <mat-slide-toggle formControlName="autoLocation" class="toggle-item">
+                                <div class="toggle-content">
+                                    <span class="toggle-title">Tự động định vị</span>
+                                    <span class="toggle-desc">Tự động sử dụng vị trí hiện tại để dự báo thời tiết</span>
+                                </div>
+                            </mat-slide-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="form-actions">
+                        <button mat-raised-button color="primary" type="submit" [disabled]="isLoading()">
+                            <mat-icon *ngIf="isLoading()">refresh</mat-icon>
+                            <mat-icon *ngIf="!isLoading()">save</mat-icon>
+                            {{ isLoading() ? 'Đang lưu...' : 'Lưu cài đặt' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+
+        <!-- Security Tab -->
+        <mat-tab label="Bảo mật">
+            <div class="tab-content">
+                <div class="security-section">
+                    <h3 class="section-title">Bảo mật tài khoản</h3>
+
+                    <div class="security-actions">
+                        <mat-card class="security-card">
+                            <mat-card-content>
+                                <div class="security-item">
+                                    <mat-icon class="security-icon">lock</mat-icon>
+                                    <div class="security-info">
+                                        <h4>Đổi mật khẩu</h4>
+                                        <p>Cập nhật mật khẩu để bảo vệ tài khoản của bạn</p>
+                                    </div>
+                                    <button mat-raised-button color="primary" (click)="changePassword()">
+                                        Đổi mật khẩu
+                                    </button>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="security-card">
+                            <mat-card-content>
+                                <div class="security-item">
+                                    <mat-icon class="security-icon">download</mat-icon>
+                                    <div class="security-info">
+                                        <h4>Xuất dữ liệu</h4>
+                                        <p>Tải xuống bản sao dữ liệu cá nhân của bạn</p>
+                                    </div>
+                                    <button mat-raised-button color="accent" (click)="exportData()">
+                                        Xuất dữ liệu
+                                    </button>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="security-card danger">
+                            <mat-card-content>
+                                <div class="security-item">
+                                    <mat-icon class="security-icon">delete_forever</mat-icon>
+                                    <div class="security-info">
+                                        <h4>Xóa tài khoản</h4>
+                                        <p>Xóa vĩnh viễn tài khoản và tất cả dữ liệu liên quan</p>
+                                    </div>
+                                    <button mat-raised-button color="warn" (click)="deleteAccount()">
+                                        Xóa tài khoản
+                                    </button>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
